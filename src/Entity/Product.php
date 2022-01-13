@@ -6,14 +6,32 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ApiResource(
+    paginationItemsPerPage: 2,
+    paginationMaximumItemsPerPage: 2,
+    paginationClientItemsPerPage: true,
     normalizationContext:[
         'groups'=>['product:read']
     ],
     denormalizationContext:[
         'groups'=>['product:write']
+    ],
+    collectionOperations:[
+        'get',
+        'post' => ["security" => "is_granted('ROLE_ADMIN')"],
+    ],
+    itemOperations:[
+        'put' => ["security" => "is_granted('ROLE_ADMIN')"],
+        'delete' => ["security" => "is_granted('ROLE_ADMIN')"],
+        'get' => [
+            'normalization_context' => [
+                'groups' => ['product:read', 'product:item:read'],
+            ]
+        ]
     ]
 )]
 class Product
@@ -26,35 +44,63 @@ class Product
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['product:read','product:write'])]
+    #[Length(min:3)]
     private $name;
 
     #[ORM\Column(type: 'text')]
     #[Groups(['product:read','product:write'])]
+    #[Length(min:3,max:1000)]
     private $description;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['product:read','product:write'])]
+    #[NotBlank()]
     private $manufacturer;
 
     #[ORM\Column(type: 'float')]
     #[Groups(['product:read','product:write'])]
+    #[NotBlank()]
     private $price;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    #[Groups(['product:read'])]
+    #[Groups(['product:item:read'])]
     private $createdAt;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(['product:read','product:write'])]
+    #[Groups(['product:item:read','product:write'])]
     private $storage;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['product:read','product:write'])]
+    #[Groups(['product:item:read','product:write'])]
     private $color;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['product:read'])]
+    #[Groups(['product:item:read'])]
     private $slug;
+
+    #[ORM\Column(type: 'float')]
+    #[Groups(['product:item:read','product:write'])]
+    private $screen;
+
+    #[ORM\Column(type: 'float')]
+    #[Groups(['product:item:read','product:write'])]
+    private $das;
+
+    #[ORM\Column(type: 'float')]
+    #[Groups(['product:item:read','product:write'])]
+    private $weight;
+
+    #[ORM\Column(type: 'float')]
+    #[Groups(['product:item:read','product:write'])]
+    private $lenght;
+
+    #[ORM\Column(type: 'float')]
+    #[Groups(['product:item:read','product:write'])]
+    private $widht;
+
+    #[ORM\Column(type: 'float')]
+    #[Groups(['product:item:read','product:write'])]
+    private $height;
 
     public function __construct()
     {
@@ -158,6 +204,78 @@ class Product
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getScreen(): ?float
+    {
+        return $this->screen;
+    }
+
+    public function setScreen(float $screen): self
+    {
+        $this->screen = $screen;
+
+        return $this;
+    }
+
+    public function getDas(): ?float
+    {
+        return $this->das;
+    }
+
+    public function setDas(float $das): self
+    {
+        $this->das = $das;
+
+        return $this;
+    }
+
+    public function getWeight(): ?float
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(float $weight): self
+    {
+        $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function getLenght(): ?float
+    {
+        return $this->lenght;
+    }
+
+    public function setLenght(float $lenght): self
+    {
+        $this->lenght = $lenght;
+
+        return $this;
+    }
+
+    public function getWidht(): ?float
+    {
+        return $this->widht;
+    }
+
+    public function setWidht(float $widht): self
+    {
+        $this->widht = $widht;
+
+        return $this;
+    }
+
+    public function getHeight(): ?float
+    {
+        return $this->height;
+    }
+
+    public function setHeight(float $height): self
+    {
+        $this->height = $height;
 
         return $this;
     }
