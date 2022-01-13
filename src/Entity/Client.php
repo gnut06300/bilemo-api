@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ClientRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -24,11 +26,11 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['client:read'])]
+    #[Groups(['client:read', 'customer:read'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
-    #[Groups(['client:read', 'client:write'])]
+    #[Groups(['client:read', 'client:write', 'customer:read'])]
     private $email;
 
     #[ORM\Column(type: 'json')]
@@ -43,19 +45,25 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     private $plainPassword;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['client:read', 'client:write'])]
+    #[Groups(['client:read', 'client:write', 'customer:read'])]
     private $username;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['client:read', 'client:write'])]
+    #[Groups(['client:read', 'client:write', 'customer:read'])]
     private $company;
 
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups(['client:read'])]
     private $createdAt;
+
+    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Customer::class, orphanRemoval: true)]
+    #[Groups(['client:read'])]
+    private $customers;
 
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->customers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -174,5 +182,40 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Customer[]
+     */
+    public function getCustomers(): Collection
+    {
+        return $this->customers;
+    }
+
+    public function addCustomer(Customer $customer): self
+    {
+        if (!$this->customers->contains($customer)) {
+            $this->customers[] = $customer;
+            $customer->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomer(Customer $customer): self
+    {
+        if ($this->customers->removeElement($customer)) {
+            // set the owning side to null (unless already changed)
+            if ($customer->getClient() === $this) {
+                $customer->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function hasRoles(string $roles): bool
+    {
+        return in_array($roles, $this->roles);
     }
 }
