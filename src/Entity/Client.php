@@ -2,15 +2,19 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ClientRepository;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 #[ApiResource(
@@ -21,6 +25,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
         'groups'=>['client:write']
     ]
 )]
+#[UniqueEntity('username')]
 class Client implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -31,6 +36,9 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     #[Groups(['client:read', 'client:write', 'customer:read'])]
+    #[Assert\Email(
+        message: 'The email {{ value }} is not a valid email.',
+    )]
     private $email;
 
     #[ORM\Column(type: 'json')]
@@ -42,14 +50,17 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[Groups(['client:write'])]
     #[SerializedName('password')]
+    #[Length(min:6)]
     private $plainPassword;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['client:read', 'client:write', 'customer:read'])]
+    #[Length(min:3)]
     private $username;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['client:read', 'client:write', 'customer:read'])]
+    #[NotBlank()]
     private $company;
 
     #[ORM\Column(type: 'datetime_immutable')]

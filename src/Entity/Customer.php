@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -25,6 +27,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         "delete" => ["security" => "is_granted('delete', object)"],
     ],
 )]
+#[ApiFilter(SearchFilter::class, properties: ['client' => 'exact'])]
 class Customer
 {
     #[ORM\Id]
