@@ -27,7 +27,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         "delete" => ["security" => "is_granted('delete', object)"],
     ],
 )]
-#[ApiFilter(SearchFilter::class, properties: ['client' => 'exact'])]
+// #[ApiFilter(SearchFilter::class, properties: ['client' => 'exact'])]
 class Customer
 {
     #[ORM\Id]

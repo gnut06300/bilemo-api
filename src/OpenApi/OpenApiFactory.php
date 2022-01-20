@@ -7,7 +7,6 @@ use ApiPlatform\Core\OpenApi\Model\PathItem;
 use ApiPlatform\Core\OpenApi\Model\Operation;
 use ApiPlatform\Core\OpenApi\Model\RequestBody;
 use ApiPlatform\Core\OpenApi\Factory\OpenApiFactoryInterface;
-use Symfony\Component\Security\Core\Security;
 
 class OpenApiFactory implements OpenApiFactoryInterface
 {
@@ -83,16 +82,16 @@ class OpenApiFactory implements OpenApiFactoryInterface
 		);
         $openApi->getPaths()->addPath('/api/login', $pathItem);
 
-        $pathItem = new PathItem(
-			post: new Operation(
-				operationId: 'postApiLogout',
-				tags: ['Authentication'],
-				responses: [
-					'204' => []
-				]
-			)
-		);
-		$openApi->getPaths()->addPath('/api/logout', $pathItem);
+        // $pathItem = new PathItem(
+		// 	post: new Operation(
+		// 		operationId: 'postApiLogout',
+		// 		tags: ['Authentication'],
+		// 		responses: [
+		// 			'204' => []
+		// 		]
+		// 	)
+		// );
+		// $openApi->getPaths()->addPath('/api/logout', $pathItem);
         // $openApi->getPaths()->addPath('/ping', new PathItem(null, 'Ping', null, new Operation('ping-id', [], [], 'Repond')));
         return $openApi;
 
