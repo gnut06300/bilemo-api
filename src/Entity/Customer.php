@@ -2,15 +2,18 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CustomerRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Length;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ApiResource(
+    paginationItemsPerPage: 3,
+    paginationMaximumItemsPerPage: 3,
+    paginationClientItemsPerPage: true,
     normalizationContext:[
         'groups'=>['customer:read']
     ],
@@ -38,19 +41,24 @@ class Customer
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['customer:read', 'customer:write', 'client:read'])]
+    #[Assert\Email(
+        message: 'The email {{ value }} is not a valid email.',
+    )]
     private $email;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['customer:read', 'customer:write', 'client:read'])]
+    #[Length(min:2)]
     private $firstname;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['customer:read', 'customer:write', 'client:read'])]
+    #[Length(min:2)]
     private $lastname;
 
     #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'customers')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['customer:read'])]
+    // #[Groups(['customer:read'])]
     private $client;
 
     #[ORM\Column(type: 'datetime_immutable')]

@@ -11,8 +11,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ApiResource(
-    paginationItemsPerPage: 2,
-    paginationMaximumItemsPerPage: 2,
+    paginationItemsPerPage: 3,
+    paginationMaximumItemsPerPage: 3,
     paginationClientItemsPerPage: true,
     normalizationContext:[
         'groups'=>['product:read']
