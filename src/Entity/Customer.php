@@ -30,7 +30,6 @@ use Symfony\Component\Validator\Constraints\Length;
         "delete" => ["security" => "is_granted('delete', object)"],
     ],
 )]
-// #[ApiFilter(SearchFilter::class, properties: ['client' => 'exact'])]
 class Customer
 {
     #[ORM\Id]
